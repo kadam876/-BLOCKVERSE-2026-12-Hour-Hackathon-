@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human & Crowd Detection - Video</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            padding-bottom: 50px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 { font-weight: 700; margin-bottom: 10px; }
+        .header p { font-size: 1.1rem; opacity: 0.8; }
+        .upload-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .drop-zone {
+            border: 2px dashed #0d6efd;
+            border-radius: 5px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .drop-zone:hover { background-color: #f8f9fa; }
+        .drop-zone-prompt { color: #6c757d; font-size: 1.2rem; margin-bottom: 15px; }
+        .drop-zone-input { display: none; }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 500;
+            border-radius: 5px;
+        }
+        .btn-primary:hover { background-color: #0b5ed7; }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 500;
+            border-radius: 5px;
+        }
+        .btn-secondary:hover { background-color: #5c636a; }
+        .file-info { margin-top: 15px; display: none; }
+        .file-info p { margin-bottom: 5px; color: #6c757d; }
+        .video-preview {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+            background-color: #000;
+        }
+        .progress-container { margin-top: 20px; display: none; }
+        .progress { height: 25px; border-radius: 5px; }
+        .progress-bar {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 25px;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            position: relative;
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        .video-stream { width: 100%; height: auto; display: block; }
+        .people-stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .people-stats h4 { margin-bottom: 15px; color: #333; }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat-row:last-child { border-bottom: none; }
+        .density-low { color: #198754; font-weight: bold; }
+        .density-medium { color: #fd7e14; font-weight: bold; }
+        .density-high { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Human & Crowd Detection</h1>
+            <p>Upload a video to detect people and analyze crowd density</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <a href="/" class="btn btn-secondary">&#8592; Back to Home</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="upload-container" id="upload-container">
+                    <h3 class="mb-4">Upload Video</h3>
+                    <div class="drop-zone" id="drop-zone">
+                        <span class="drop-zone-prompt">Drag and drop a video or click to select</span>
+                        <input type="file" name="video" class="drop-zone-input" id="video-input" accept="video/*">
+                    </div>
+
+                    <div class="file-info" id="file-info-container">
+                        <p><strong>File Name:</strong> <span id="file-name"></span></p>
+                        <p><strong>File Size:</strong> <span id="file-size"></span></p>
+                        <button class="btn btn-secondary btn-sm" id="remove-file">Remove File</button>
+                    </div>
+
+                    <video id="video-preview" class="video-preview" controls></video>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-primary" id="process-btn" disabled>Detect People</button>
+                    </div>
+
+                    <div class="progress-container" id="progress-container">
+                        <p class="text-center mb-2">Processing video, please wait...</p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-container" id="video-container">
+                    <video id="video-result" class="video-stream" controls></video>
+                </div>
+
+                <div class="people-stats" id="people-stats">
+                    <h4>Crowd Analysis Results</h4>
+                    <div class="stat-row">
+                        <strong>Total People Detected:</strong>
+                        <span id="total-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <strong>Max People in a Single Frame:</strong>
+                        <span id="max-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <strong>Average Crowd Density:</strong>
+                        <span id="density-level">No Crowd</span>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a id="download-btn" class="btn btn-primary" style="display: none;">Download Processed Video</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoInput = document.getElementById('video-input');
+            const videoPreview = document.getElementById('video-preview');
+            const videoResult = document.getElementById('video-result');
+            const processBtn = document.getElementById('process-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const fileInfoContainer = document.getElementById('file-info-container');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const removeFile = document.getElementById('remove-file');
+            const videoContainer = document.getElementById('video-container');
+            const peopleStats = document.getElementById('people-stats');
+            const totalCount = document.getElementById('total-count');
+            const maxCount = document.getElementById('max-count');
+            const densityLevel = document.getElementById('density-level');
+            const downloadBtn = document.getElementById('download-btn');
+            const dropZone = document.getElementById('drop-zone');
+
+            dropZone.addEventListener('click', function() { videoInput.click(); });
+
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drop-zone-over');
+            });
+
+            ['dragleave', 'dragend'].forEach(type => {
+                dropZone.addEventListener(type, function() {
+                    this.classList.remove('drop-zone-over');
+                });
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drop-zone-over');
+                if (e.dataTransfer.files.length) {
+                    videoInput.files = e.dataTransfer.files;
+                    updateFileInfo();
+                }
+            });
+
+            videoInput.addEventListener('change', updateFileInfo);
+
+            function updateFileInfo() {
+                if (videoInput.files.length > 0) {
+                    const file = videoInput.files[0];
+                    if (!file.type.match('video.*')) {
+                        alert('Please select a video file.');
+                        resetFileInput();
+                        return;
+                    }
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    fileInfoContainer.style.display = 'block';
+                    videoPreview.src = URL.createObjectURL(file);
+                    videoPreview.style.display = 'block';
+                    processBtn.disabled = false;
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            removeFile.addEventListener('click', resetFileInput);
+
+            function resetFileInput() {
+                videoInput.value = '';
+                videoPreview.style.display = 'none';
+                videoPreview.src = '';
+                fileInfoContainer.style.display = 'none';
+                processBtn.disabled = true;
+            }
+
+            processBtn.addEventListener('click', function() {
+                if (videoInput.files.length === 0) return;
+
+                progressContainer.style.display = 'block';
+                processBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append('video', videoInput.files[0]);
+
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += Math.random() * 5;
+                    if (progress > 90) { progress = 90; clearInterval(interval); }
+                    progressBar.style.width = progress + '%';
+                    progressBar.setAttribute('aria-valuenow', progress);
+                    progressBar.textContent = Math.round(progress) + '%';
+                }, 500);
+
+                fetch('/detect_video', { method: 'POST', body: formData })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => { throw new Error(data.error || 'An error occurred'); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    progressBar.setAttribute('aria-valuenow', 100);
+                    progressBar.textContent = '100%';
+
+                    setTimeout(function() {
+                        videoResult.src = '/video_result/' + data.video_path;
+                        videoContainer.style.display = 'block';
+
+                        totalCount.textContent = data.total_people;
+                        maxCount.textContent = data.max_people_in_frame;
+                        densityLevel.textContent = data.avg_density_level;
+
+                        if (data.avg_density_level === 'Low Density') {
+                            densityLevel.className = 'density-low';
+                        } else if (data.avg_density_level === 'Medium Density') {
+                            densityLevel.className = 'density-medium';
+                        } else if (data.avg_density_level === 'High Density') {
+                            densityLevel.className = 'density-high';
+                        } else {
+                            densityLevel.className = '';
+                        }
+
+                        downloadBtn.href = '/download_video/' + data.video_path;
+                        downloadBtn.style.display = 'inline-block';
+                        peopleStats.style.display = 'block';
+                        progressContainer.style.display = 'none';
+                        processBtn.disabled = false;
+                    }, 1000);
+                })
+                .catch(error => {
+                    clearInterval(interval);
+                    alert('Error: ' + error.message);
+                    progressContainer.style.display = 'none';
+                    processBtn.disabled = false;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

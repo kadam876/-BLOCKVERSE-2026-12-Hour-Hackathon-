@@ -1,0 +1,38 @@
+{
+  "locations": [
+    {
+      "id": "loc_1",
+      "name": "Bus Stand A",
+      "type": "transport",
+      "threshold": 50,
+      "authority": "transport",
+      "authorityEmail": "transport@authority.gov.in",
+      "status": "normal",
+      "lastCount": 0,
+      "lastUpdated": null
+    },
+    {
+      "id": "loc_2",
+      "name": "Market Square",
+      "type": "police",
+      "threshold": 100,
+      "authority": "police",
+      "authorityEmail": "police@station.gov.in",
+      "status": "normal",
+      "lastCount": 0,
+      "lastUpdated": null
+    },
+    {
+      "id": "loc_3",
+      "name": "Railway Station",
+      "type": "police",
+      "threshold": 80,
+      "authority": "police",
+      "authorityEmail": "police@station.gov.in",
+      "status": "normal",
+      "lastCount": 0,
+      "lastUpdated": null
+    }
+  ],
+  "alerts": []
+}

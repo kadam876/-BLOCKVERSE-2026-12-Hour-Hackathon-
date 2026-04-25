@@ -1,0 +1,26 @@
+# Python local env (5+ GB — use requirements.txt instead)
+Lib/
+Scripts/
+share/
+__pycache__/
+*.pyc
+*.pyo
+
+# Output videos
+peopledetect/
+
+# Node
+crowd-alert-system/backend/node_modules/
+crowd-alert-system/frontend/node_modules/
+
+# Secrets
+crowd-alert-system/backend/.env
+
+# Vite build output
+crowd-alert-system/frontend/dist/
+
+# VS Code
+.vscode/
+
+# Model weights (large binary — download separately)
+# yolo11n.pt

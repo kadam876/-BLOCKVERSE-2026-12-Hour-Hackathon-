@@ -1,0 +1,3 @@
+face-recognition==1.3.0
+dlib==19.24.6
+Pillow==11.1.0
