@@ -1,4 +1,4 @@
-﻿# Crowd Alert System ΓÇö BLOCKVERSE 2026 Hackathon
+﻿# Crowd Alert System — BLOCKVERSE 2026 Hackathon
 
 An AI-powered real-time crowd detection and public safety platform built for Indian police and transport authorities. The system uses YOLOv11 to detect people in video feeds, triggers automated email alerts when crowd thresholds are exceeded, and provides a full-featured dashboard for monitoring locations, suspects, cameras, and vehicles.
 
@@ -21,14 +21,14 @@ An AI-powered real-time crowd detection and public safety platform built for Ind
 
 ```
 React Frontend (5173)
-        Γöé
-        Γû╝
-Node.js + Express Backend (4000)  ΓöÇΓöÇΓöÇΓöÇ MongoDB (27017)
-        Γöé                                    Γöé
-        Γû╝                               Mongoose Models
+        │
+        ▼
+Node.js + Express Backend (4000)  ──── MongoDB (27017)
+        │                                    │
+        ▼                               Mongoose Models
 Flask + YOLO AI Engine (5002)       (Location, Alert, Camera,
-        Γöé                            Suspect, Vehicle, FaceMatch)
-        Γû╝
+        │                            Suspect, Vehicle, FaceMatch)
+        ▼
   Gmail SMTP (email alerts)
 ```
 
@@ -53,7 +53,7 @@ Flask + YOLO AI Engine (5002)       (Location, Alert, Camera,
 ## Features
 
 ### Crowd Detection
-- Upload a video for batch processing ΓÇö YOLO annotates every frame and outputs a processed video
+- Upload a video for batch processing — YOLO annotates every frame and outputs a processed video
 - Live streaming mode shows frame-by-frame progress with people count and density level (Low / Medium / High)
 - Threshold auto-calculated from a training video (normal crowd day) per location
 
@@ -64,9 +64,9 @@ Flask + YOLO AI Engine (5002)       (Location, Alert, Camera,
 - Camera status tracked in real-time
 
 ### Suspect Tracking
-- Register suspects with a photo ΓÇö face embedding extracted automatically
+- Register suspects with a photo — face embedding extracted automatically
 - During live detection, faces in frames are compared against the suspect database
-- Match alerts sent to backend when confidence ΓëÑ 75%
+- Match alerts sent to backend when confidence ≥ 75%
 
 ### Vehicle Tracking
 - Log vehicles with plate numbers and associate them with locations
@@ -142,7 +142,7 @@ EMAIL_USER=your_gmail@gmail.com
 EMAIL_PASS=xxxx xxxx xxxx xxxx
 ```
 
-> Gmail App Password required ΓÇö generate one at: https://myaccount.google.com/apppasswords
+> Gmail App Password required — generate one at: https://myaccount.google.com/apppasswords
 
 ### 5. YOLO model
 
@@ -154,18 +154,18 @@ The `yolo11n.pt` model (5.4 MB) is included in the repo. If missing, Ultralytics
 
 Open 3 terminals:
 
-**Terminal 1 ΓÇö Flask AI engine:**
+**Terminal 1 — Flask AI engine:**
 ```bash
 python people.py
 ```
 
-**Terminal 2 ΓÇö Node.js backend:**
+**Terminal 2 — Node.js backend:**
 ```bash
 cd crowd-alert-system/backend
 node server.js
 ```
 
-**Terminal 3 ΓÇö React frontend:**
+**Terminal 3 — React frontend:**
 ```bash
 cd crowd-alert-system/frontend
 npm run dev
@@ -178,28 +178,28 @@ Open `http://localhost:5173`
 ## Usage Guide
 
 ### Setting Up a Location
-1. Go to **Locations** ΓåÆ Add a new location
-2. Click the location ΓåÆ complete the setup wizard
+1. Go to **Locations** → Add a new location
+2. Click the location → complete the setup wizard
 3. Enter department (Police / Transport) and authority email
-4. Upload a training video (normal crowd day) ΓÇö YOLO calculates the threshold automatically
+4. Upload a training video (normal crowd day) — YOLO calculates the threshold automatically
 
 ### Running Detection
-1. Go to **Detect** ΓåÆ upload a test video
+1. Go to **Detect** → upload a test video
 2. Live inference streams frame-by-frame with people count overlay
-3. If crowd exceeds threshold ΓåÆ email alert fires with annotated frame
+3. If crowd exceeds threshold → email alert fires with annotated frame
 
 ### Live Camera
-1. Go to **Cameras** ΓåÆ add an IP webcam URL
-2. Start detection ΓÇö the camera thread runs independently in the background
+1. Go to **Cameras** → add an IP webcam URL
+2. Start detection — the camera thread runs independently in the background
 3. Alerts fire automatically when threshold is exceeded
 
 ### Suspects
-1. Go to **Suspects** ΓåÆ add a suspect with a photo
+1. Go to **Suspects** → add a suspect with a photo
 2. Enable face recognition in live detection settings
 3. Matches are logged automatically with confidence score and face snapshot
 
 ### Vehicles
-1. Go to **Vehicles** ΓåÆ register a vehicle with plate number
+1. Go to **Vehicles** → register a vehicle with plate number
 2. Log checkpoint sightings to build a movement path
 3. View full path history on the vehicle detail page
 
@@ -226,45 +226,45 @@ Open `http://localhost:5173`
 ## Project Structure
 
 ```
-Γö£ΓöÇΓöÇ people.py                        # Flask AI server (YOLO + face recognition)
-Γö£ΓöÇΓöÇ yolo11n.pt                       # YOLO model weights
-Γö£ΓöÇΓöÇ requirements.txt
-Γö£ΓöÇΓöÇ templates/                       # Flask HTML templates
-Γö£ΓöÇΓöÇ crowd-alert-system/
-Γöé   Γö£ΓöÇΓöÇ backend/
-Γöé   Γöé   Γö£ΓöÇΓöÇ server.js                # Express + Socket.IO server
-Γöé   Γöé   Γö£ΓöÇΓöÇ models/                  # Mongoose schemas
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ Alert.js
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ Camera.js
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ FaceMatch.js
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ Location.js
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ Suspect.js
-Γöé   Γöé   Γöé   Γö£ΓöÇΓöÇ Vehicle.js
-Γöé   Γöé   Γöé   ΓööΓöÇΓöÇ VehicleTracking.js
-Γöé   Γöé   Γö£ΓöÇΓöÇ routes/                  # Express route handlers
-Γöé   Γöé   ΓööΓöÇΓöÇ services/
-Γöé   Γöé       Γö£ΓöÇΓöÇ crowdService.js      # Threshold logic + alert trigger
-Γöé   Γöé       ΓööΓöÇΓöÇ emailService.js      # Nodemailer email sender
-Γöé   ΓööΓöÇΓöÇ frontend/
-Γöé       ΓööΓöÇΓöÇ src/
-Γöé           Γö£ΓöÇΓöÇ App.jsx              # Router + nav
-Γöé           ΓööΓöÇΓöÇ pages/
-Γöé               Γö£ΓöÇΓöÇ Dashboard.jsx
-Γöé               Γö£ΓöÇΓöÇ VideoDetect.jsx
-Γöé               Γö£ΓöÇΓöÇ LiveCamera.jsx
-Γöé               Γö£ΓöÇΓöÇ Cameras.jsx
-Γöé               Γö£ΓöÇΓöÇ Suspects.jsx
-Γöé               Γö£ΓöÇΓöÇ VehicleTracking.jsx
-Γöé               Γö£ΓöÇΓöÇ AlertHistory.jsx
-Γöé               ΓööΓöÇΓöÇ Locations.jsx
+├── people.py                        # Flask AI server (YOLO + face recognition)
+├── yolo11n.pt                       # YOLO model weights
+├── requirements.txt
+├── templates/                       # Flask HTML templates
+├── crowd-alert-system/
+│   ├── backend/
+│   │   ├── server.js                # Express + Socket.IO server
+│   │   ├── models/                  # Mongoose schemas
+│   │   │   ├── Alert.js
+│   │   │   ├── Camera.js
+│   │   │   ├── FaceMatch.js
+│   │   │   ├── Location.js
+│   │   │   ├── Suspect.js
+│   │   │   ├── Vehicle.js
+│   │   │   └── VehicleTracking.js
+│   │   ├── routes/                  # Express route handlers
+│   │   └── services/
+│   │       ├── crowdService.js      # Threshold logic + alert trigger
+│   │       └── emailService.js      # Nodemailer email sender
+│   └── frontend/
+│       └── src/
+│           ├── App.jsx              # Router + nav
+│           └── pages/
+│               ├── Dashboard.jsx
+│               ├── VideoDetect.jsx
+│               ├── LiveCamera.jsx
+│               ├── Cameras.jsx
+│               ├── Suspects.jsx
+│               ├── VehicleTracking.jsx
+│               ├── AlertHistory.jsx
+│               └── Locations.jsx
 ```
 
 ---
 
 ## Built At
 
-BLOCKVERSE 2026 ΓÇö 12-Hour Hackathon
+BLOCKVERSE 2026 — 12-Hour Hackathon
 
 **Repository:** https://github.com/kadam876/-BLOCKVERSE-2026-12-Hour-Hackathon-
 
-Timing: 4:05
+**Timing:** 4:05
